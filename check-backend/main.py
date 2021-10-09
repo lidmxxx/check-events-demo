@@ -12,6 +12,7 @@ import db
 app = FastAPI(docs_url=None, redoc_url=None)
 def get_checked_list():
     checked = db.DBBase().query_all('SELECT event_id FROM need_checked_events')
+    db.DBBase().close_connect()
     checked_list = []
     for i in checked:
         checked_list.append(i['event_id'])
@@ -58,6 +59,7 @@ async def check_is_missed(item:Item):
     equip_id = item.equip_id
     results = db.DBBase().query_all(f'SELECT event_id, count(*) as c FROM events_tracking_log_{date} '
                                     f'WHERE equip_id = "{equip_id}" GROUP BY event_id')
+    db.DBBase().close_connect()
     result_dict = {} # save database event_id -> count json
     result_event_id_list = []
     if type(results) == list:
